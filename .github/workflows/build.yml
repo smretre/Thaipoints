@@ -9,12 +9,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    env:
-      ANDROID_HOME: ${{ github.workspace }}/android-sdk
-      PATH: ${{ github.workspace }}/android-sdk/cmdline-tools/latest/bin:$PATH
-
     steps:
+
+      - name: Instalar pacotes básicos
+        run: sudo apt update && sudo apt install -y tar unzip wget curl git
+
       - name: Checkout código
         uses: actions/checkout@v4
 
