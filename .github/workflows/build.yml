@@ -9,19 +9,23 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:
 
+    steps:
+      # Instala pacotes básicos
       - name: Instalar pacotes básicos
         run: sudo apt update && sudo apt install -y tar unzip wget curl git zip openjdk-17-jdk python3-pip
 
+      # Clona o repositório
       - name: Checkout código
         uses: actions/checkout@v4
 
+      # Instala dependências Python
       - name: Instalar dependências Python
         run: |
           pip install --upgrade pip setuptools wheel
           pip install buildozer cython virtualenv
 
+      # Configura Android SDK e aceita licenças
       - name: Configurar Android SDK
         run: |
           export ANDROID_HOME=$HOME/android-sdk
@@ -34,18 +38,7 @@ jobs:
           yes | sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "platforms;android-33" "build-tools;33.0.2"
           yes | sdkmanager --sdk_root=$ANDROID_HOME --licenses
 
-      - name: Instalar Build Tools e Platform-Tools
-        run: |
-          export ANDROID_HOME=$HOME/android-sdk
-          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
-          yes | sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
-
-      - name: Aceitar todas as licenças do Android SDK
-        run: |
-          export ANDROID_HOME=$HOME/android-sdk
-          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
-          yes | sdkmanager --licenses
-
+      # Roda Buildozer
       - name: Rodar Buildozer
         run: |
           export ANDROID_HOME=$HOME/android-sdk
@@ -53,6 +46,7 @@ jobs:
           cd $GITHUB_WORKSPACE
           buildozer android debug
 
+      # Upload do APK gerado
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
