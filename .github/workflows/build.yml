@@ -20,6 +20,10 @@ jobs:
           sudo apt install -y python3-pip git zip unzip openjdk-17-jdk
           pip install --upgrade pip setuptools wheel
           pip install buildozer cython virtualenv
+
+      - name: Instalar Build Tools e Platform-Tools
+        run: |
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;36.0.0" "platform-tools" "platforms;android-33"     
           
       - name: Accept Android licenses
         run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
