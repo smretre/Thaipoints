@@ -12,36 +12,42 @@ jobs:
     steps:
 
       - name: Instalar pacotes básicos
-        run: sudo apt update && sudo apt install -y tar unzip wget curl git
+        run: sudo apt update && sudo apt install -y tar unzip wget curl git zip openjdk-17-jdk python3-pip
 
       - name: Checkout código
         uses: actions/checkout@v4
 
-      - name: Instalar dependências do sistema
+      - name: Instalar dependências Python
         run: |
-          sudo apt update
-          sudo apt install -y python3-pip git zip unzip openjdk-17-jdk wget
           pip install --upgrade pip setuptools wheel
           pip install buildozer cython virtualenv
 
       - name: Configurar Android SDK
         run: |
+          export ANDROID_HOME=$HOME/android-sdk
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
           mkdir -p $ANDROID_HOME/cmdline-tools
           cd $ANDROID_HOME/cmdline-tools
           wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
           unzip cmdline-tools.zip
           mv cmdline-tools latest
-          
+
       - name: Instalar Build Tools e Platform-Tools
         run: |
-          yes | sdkmanager "platform-tools" "platforms;android-33" "build-tools;36.0.0"
+          export ANDROID_HOME=$HOME/android-sdk
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;36.0.0"
 
       - name: Aceitar todas as licenças do Android SDK
         run: |
-          yes | sdkmanager --licenses
+          export ANDROID_HOME=$HOME/android-sdk
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
 
       - name: Rodar Buildozer
         run: |
+          export ANDROID_HOME=$HOME/android-sdk
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
           cd $GITHUB_WORKSPACE
           buildozer android debug
 
