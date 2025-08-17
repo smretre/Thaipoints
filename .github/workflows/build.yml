@@ -1,8 +1,8 @@
 name: Build APK
 
 on:
-  workflow_dispatch:  # permite rodar manualmente
-  push:               # roda sempre que fizer git push
+  workflow_dispatch:
+  push:
     branches:
       - main
 
@@ -21,15 +21,21 @@ jobs:
           pip install --upgrade pip setuptools wheel
           pip install buildozer cython virtualenv
 
-      - name: Instalar Build Tools e Platform-Tools
+      - name: Configurar Android SDK
         run: |
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;36.0.0" "platform-tools" "platforms;android-33"     
-          
-      - name: Accept Android licenses
-        run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
-        
-      - name: Rodar buildozer
+          export ANDROID_HOME=$HOME/android-sdk
+          mkdir -p $ANDROID_HOME/cmdline-tools
+          cd $ANDROID_HOME/cmdline-tools
+          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
+          unzip cmdline-tools.zip
+          mv cmdline-tools latest
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;36.0.0"
+
+      - name: Rodar Buildozer
         run: |
+          export ANDROID_HOME=$HOME/android-sdk
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
           cd $GITHUB_WORKSPACE
           buildozer android debug
 
