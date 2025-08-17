@@ -9,44 +9,40 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      # Instala pacotes básicos
+
       - name: Instalar pacotes básicos
         run: sudo apt update && sudo apt install -y tar unzip wget curl git zip openjdk-17-jdk python3-pip
 
-      # Clona o repositório
       - name: Checkout código
         uses: actions/checkout@v4
 
-      # Instala dependências Python
       - name: Instalar dependências Python
         run: |
           pip install --upgrade pip setuptools wheel
           pip install buildozer cython virtualenv
 
-      # Configura Android SDK e aceita licenças
-      - name: Configurar Android SDK
+      - name: Configurar Android SDK e aceitar licenças
         run: |
           export ANDROID_HOME=$HOME/android-sdk
-          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
           mkdir -p $ANDROID_HOME/cmdline-tools/latest
           cd $ANDROID_HOME/cmdline-tools
           wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
           unzip cmdline-tools.zip -d latest
           rm cmdline-tools.zip
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
+          # Instala Build Tools, Platform-Tools e API 33
           yes | sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "platforms;android-33" "build-tools;33.0.2"
+          # Aceita todas as licenças
           yes | sdkmanager --sdk_root=$ANDROID_HOME --licenses
 
-      # Roda Buildozer
       - name: Rodar Buildozer
         run: |
           export ANDROID_HOME=$HOME/android-sdk
           export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
-          cd $GITHUB_WORKSPACE
+          cd $GITHUB_WORKSPACE/src/thaipoint
           buildozer android debug
 
-      # Upload do APK gerado
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
