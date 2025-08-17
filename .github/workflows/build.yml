@@ -20,7 +20,10 @@ jobs:
           sudo apt install -y python3-pip git zip unzip openjdk-17-jdk
           pip install --upgrade pip setuptools wheel
           pip install buildozer cython virtualenv
-
+          
+      - name: Accept Android licenses
+        run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+        
       - name: Rodar buildozer
         run: |
           cd $GITHUB_WORKSPACE
