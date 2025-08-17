@@ -23,7 +23,7 @@ jobs:
 
       - name: Rodar buildozer
         run: |
-          cd src/thaipoint
+          run: cd $GITHUB_WORKSPACE
           buildozer android debug
 
       - name: Upload APK
