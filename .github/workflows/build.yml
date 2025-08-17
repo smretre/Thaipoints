@@ -1,0 +1,33 @@
+name: Build APK
+
+on:
+  workflow_dispatch:  # permite rodar manualmente
+  push:               # roda sempre que fizer git push
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      - name: Instalar dependências do sistema
+        run: |
+          sudo apt update
+          sudo apt install -y python3-pip git zip unzip openjdk-17-jdk
+          pip install --upgrade pip setuptools wheel
+          pip install buildozer cython virtualenv
+
+      - name: Rodar buildozer
+        run: |
+          cd src/thaipoint
+          buildozer android debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: Thaipoints-APK
+          path: src/thaipoint/bin/*.apk
