@@ -10,6 +10,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      ANDROID_HOME: ${{ github.workspace }}/android-sdk
+      PATH: ${{ github.workspace }}/android-sdk/cmdline-tools/latest/bin:$PATH
+
     steps:
       - name: Checkout código
         uses: actions/checkout@v4
@@ -17,27 +21,28 @@ jobs:
       - name: Instalar dependências do sistema
         run: |
           sudo apt update
-          sudo apt install -y python3-pip git zip unzip openjdk-17-jdk
+          sudo apt install -y python3-pip git zip unzip openjdk-17-jdk wget
           pip install --upgrade pip setuptools wheel
           pip install buildozer cython virtualenv
 
       - name: Configurar Android SDK
         run: |
-          export ANDROID_HOME=$HOME/android-sdk
           mkdir -p $ANDROID_HOME/cmdline-tools
           cd $ANDROID_HOME/cmdline-tools
           wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
           unzip cmdline-tools.zip
           mv cmdline-tools latest
-          # Instala as ferramentas necessárias
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;36.0.0"
-          # Aceita todas as licenças depois da instalação
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+          
+      - name: Instalar Build Tools e Platform-Tools
+        run: |
+          yes | sdkmanager "platform-tools" "platforms;android-33" "build-tools;36.0.0"
+
+      - name: Aceitar todas as licenças do Android SDK
+        run: |
+          yes | sdkmanager --licenses
 
       - name: Rodar Buildozer
         run: |
-          export ANDROID_HOME=$HOME/android-sdk
-          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
           cd $GITHUB_WORKSPACE
           buildozer android debug
 
