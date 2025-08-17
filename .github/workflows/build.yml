@@ -38,7 +38,7 @@ jobs:
         run: |
           export ANDROID_HOME=$HOME/android-sdk
           export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
-          yes | sdkmanager "platform-tools" "platforms;android-33" "build-tools;36.0.0"
+          yes | sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
 
       - name: Aceitar todas as licenças do Android SDK
         run: |
