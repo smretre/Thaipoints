@@ -30,19 +30,21 @@ jobs:
           cd $ANDROID_HOME/cmdline-tools
           wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
           unzip cmdline-tools.zip
-          mv cmdline-tools latest
+          mkdir -p latest
+          mv cmdline-tools/* latest/
+          rm -rf cmdline-tools.zip cmdline-tools
 
       - name: Instalar Build Tools e Platform-Tools
         run: |
           export ANDROID_HOME=$HOME/android-sdk
           export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;36.0.0"
+          yes | sdkmanager "platform-tools" "platforms;android-33" "build-tools;36.0.0"
 
       - name: Aceitar todas as licenças do Android SDK
         run: |
           export ANDROID_HOME=$HOME/android-sdk
           export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+          yes | sdkmanager --licenses
 
       - name: Rodar Buildozer
         run: |
